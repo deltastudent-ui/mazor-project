@@ -18,6 +18,7 @@ app.engine('ejs', ejsmate);
 // requiring express-monog for cloud storage
 // for requiring session 
 const mongoStore = require("module")
+const MongoStore = require('connect-mongo');
 const session = require("express-session");
 
 // for requiring flash..
@@ -89,8 +90,6 @@ const listingRouter = require("./routs/alllistings.js");
 // reviews 
 const reviewRouter = require("./routs/reviewrestructure.js");
 // user for signup
-const userRouter = require("./routs/user.js");
-const MongoStore = require('connect-mongo');
 
 app.use(express.json());
  
@@ -123,6 +122,7 @@ httpOnly:true,
 }
 
 
+const userRouter = require("./routs/user.js");
 
 
 //for use cookie parser --- 
