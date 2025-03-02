@@ -15,7 +15,9 @@ app.use(method("_method"));
 const ejsmate = require("ejs-mate");
 app.engine('ejs', ejsmate);
 
+// requiring express-monog for cloud storage
 // for requiring session 
+const mongoStore = require("module")
 const session = require("express-session");
 
 // for requiring flash..
@@ -36,7 +38,8 @@ const User = require("./models/user.js");
 // moongse requie 
 
 const mongoose = require('mongoose');
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+// const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+const dburl = process.env.ATLASDB_URL;
 main().then(()=>{
     console.log("connection succesfull");
 })
@@ -44,12 +47,13 @@ main().then(()=>{
 
 
 async function main() {
-  await mongoose.connect(MONGO_URL);
+  await mongoose.connect(dburl);
 
 }
+
 //require path -
 let path = require('path');
-const { count } = require('console');
+const { count, error } = require('console');
 const { title } = require('process');
 
 // require for ejs --
@@ -86,12 +90,29 @@ const listingRouter = require("./routs/alllistings.js");
 const reviewRouter = require("./routs/reviewrestructure.js");
 // user for signup
 const userRouter = require("./routs/user.js");
+const MongoStore = require('connect-mongo');
 
 app.use(express.json());
+ 
+                // ye mongoStore dusra hai na ki require ka
+
+const store  = MongoStore.create({
+       mongoUrl: dburl,
+       crypto:{
+        secret:process.env.SECRET,
+       },
+       touchAfter:24*3600
+});
+
+store.on("error",()=>{
+  console.log("error in mongo session store,", error);
+});
+
 
 // define the session option --
 const sessionoption = {
-secret:'muSuperSecretCode',
+  store,
+secret:process.env.SECRET,
 resave:false,
 saveUninitialized:true,
 cookie:{
